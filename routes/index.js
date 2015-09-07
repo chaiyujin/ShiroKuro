@@ -14,6 +14,18 @@ router.get('/blog_home', function(req, res, next) {
 	res.render('blog_home');
 });
 
+router.get('/cg_home', function(req, res, next) {
+	res.render('cg_home');
+});
+
+router.get('/acg_home', function(req, res, next) {
+	res.render('acg_home');
+});
+
+router.get('/draw_home', function(req, res, next) {
+	res.render('draw_home');
+});
+
 router.post('/blog_home/getData', function(req, res, next) {
 	fileContent = fs.readFileSync('test.md', 'utf8');
 	var html = converter.makeHtml(fileContent);
