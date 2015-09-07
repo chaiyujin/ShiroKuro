@@ -1,18 +1,37 @@
 var express = require('express');
+var app = express();
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+var settings = require('./bin/database/settings');
+var db = require('./bin/database/msession');
+var session = require('express-session');
+var MongoStore = require('connect-mongodb');
+
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
-var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
+app.use(session({
+    cookie: { maxAge: 600000 },
+    secret: settings.COOKIE_SECRET,
+    store: new MongoStore({
+        url: settings.URL,
+        db: db
+    })
+}));
+
+app.use(function (req, res, next) {
+    res.locals.user = req.session.user;
+    next();
+});
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
