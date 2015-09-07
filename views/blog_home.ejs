@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+		<title>白と黒</title>
+		<link rel="stylesheet" href="/content/css/blackmarisa.css" type="text/css"/>
+		<script src="/lib/jquery-1.8.0.js" type="text/javascript"></script>
+		<script type='text/javascript' src='/lib/knockout-3.3.0.js'></script>
+		<script src="/lib/sliderPhoto.js" type="text/javascript"></script>
+	</head>
+
+	<body>
+		<div class="container" id="mainContainer">
+			<div class="middle clearfix" style="width: 1500px;">
+				<div class="float span2" style="height: 100px; ">
+					<a class="homeTitle" href="/">SHIRO</a>
+				</div>
+				<div class="float span8" style="height: 100px;">
+					<ul class="navBanner">
+						<li id="nav01">
+							<a href="/draw_home">
+								<span class="title">絵画クラブ</span>
+								<span class="subTitle">Draw club</span>
+							</a>
+						</li>
+						<li id="nav02">
+							<a href="/acg_home">
+								<span class="title">ゲーム＆アニメ</span>
+								<span class="subTitle">Game & Anime</span>
+							</a>
+						</li>
+						<li id="nav03">
+							<a href="/cg_home">
+								<span class="title">CGグループ</span>
+								<span class="subTitle">CG group</span>
+							</a>
+						</li>
+						<li id="nav04">
+							<a href="/blog_home">
+								<span class="title">ブログ</span>
+								<span class="subTitle">Blog</span>
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="middle contentContainer" style="width: 1500px;">
+				<div class="middle background clearfix">
+					<!-- left column for article -->
+					<div class="float span8">
+						<div class="articleBox miniBox" data-bind="html: firstName"></div>
+						<div class="tailBox"><a href="#">Read more-></a></div>
+						<div class="articleBox miniBox" data-bind="html: firstName"></div>
+						<div class="tailBox"><a href="#">Read more-></a></div>
+						<div class="articleBox miniBox" data-bind="html: firstName"></div>
+						<div class="tailBox"><a href="#">Read more-></a></div>
+						<div class="articleBox miniBox" data-bind="html: firstName"></div>
+						<div class="tailBox"><a href="#">Read more-></a></div>
+					</div>
+					<!-- right column for catalog -->
+					<div class="float catalog">
+						<img src="/content/pictures/avatar.jpg"></img>
+						<h1>Yuki-CYJ</h1>
+						<div class="subTitle"><h2>Introduce<h2></div>
+						<div class="content"><p>Lovelive!!</p><p>Lovelive!!</p></div>
+						<div class="subTitle"><h2>Catalog<h2></div>
+						<ul>
+							<li><a href="#">2015.09</a></li>
+							<li><a href="#">2015.09</a></li>
+							<li><a href="#">2015.09</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script src="/viewmodels/blog_home.js" type="text/javascript"></script>
+	<script>
+		$("#nav04").addClass("active");
+	</script>
+</html>
