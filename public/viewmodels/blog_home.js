@@ -37,7 +37,7 @@ var addArticleVM = function () {
 }
 
 var viewModel = {
-	articles: ko.observableArray(),
+	articles: ko.observableArray([]),
     htmlContent: ko.observableArray(),
     username: ko.observable("Guest"),
     avatarURL: ko.observable("/content/pictures/avatar/default.jpg"),
@@ -54,9 +54,20 @@ $.ajax({
 	type: "POST",
 	url: "/blog_home/getData",
 	success: function (data) {
-		if (viewModel.articles().length == 0) {
+	    if (viewModel.login() == false || !viewModel.articles().length) {
 			var temp = (viewModel.login() == true)? data.newUser: data.guest;
 		    viewModel.htmlContent([temp]);
-		}
+	    }
+	    else {
+	        $.ajax({
+	            type: "POST",
+	            url: "/blog_home/getBlog",
+	            data: { data: viewModel.articles()},
+	            success: function (data) {
+	                console.log(data);
+	                viewModel.htmlContent(data);
+	            }
+	        })
+	    }
 	}
 });

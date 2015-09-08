@@ -9,6 +9,7 @@ var formidable = require('formidable'),
 
 var templateURL = "/content/pictures/avatar/";
 var userDB = require('../bin/database/user.js').user;
+var blogDB = require('../bin/database/user.js').blog;
 var userTuple = {
     acc: "",
     pwd: "",
@@ -84,6 +85,20 @@ router.post('/blog_home/getData', function(req, res, next) {
 	res.json(data);
 });
 
+router.post('/blog_home/getBlog', function (req, res, next) {
+    var articles = req.body["data[]"];
+    var ret = [];
+    blogDB.find({ blogID: { $in: articles } }, function (err, docs) {
+        if (err) { return; }
+        if (docs) {
+            for (var idx in docs) {
+                ret.push(docs[idx].html);
+                res.send(ret);
+            }
+        }
+    });
+});
+
 function authentication (req, res) {
     if (!req.session.user) {
         userLoginData.login = false;
@@ -115,7 +130,7 @@ router.post('/uploadBlogFile', function (req, res, next) {
             fs.writeFileSync("test.html", html);
             fs.unlinkSync(filename);
             message = "Successfully add article.";
-            res.redirect('/blog_home');
+            addBlog(req, res, html, "blog");
         }
         else {
             fs.unlinkSync(filename);
@@ -124,5 +139,34 @@ router.post('/uploadBlogFile', function (req, res, next) {
         }
     });
 });
+
+function addBlog(req, res, html, type) {
+    blogDB.count({}, function (err, count) {
+        var blogTuple = {
+            html: html,
+            type: type,
+            updatedAt: new Date(),
+            blogID: count
+        }
+        userLoginData.articles.push(count);
+        req.session.user = userLoginData;
+        userDB.update({ acc: userLoginData.username }, {
+            $push: { articles: count }
+        }, function (err, docs) {
+            if (err) {
+                console.log(err);
+                res.redirect('/blog_home');
+            }
+        });
+        var blogEntity = new blogDB(blogTuple);
+        blogEntity.save(function (err) {
+            if (err) {
+                console.log(err);
+                res.redirect('/blog_home');
+            }
+        });
+        res.redirect('/blog_home');
+    });
+}
 
 module.exports = router;

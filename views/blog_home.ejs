@@ -87,7 +87,7 @@
 		viewModel.introduction("<%= userLoginData.introduction %>");
 		viewModel.avatarURL("<%= userLoginData.avatarURL %>");
 		viewModel.login(<%= userLoginData.login %>);
-		viewModel.articles(<%= userLoginData.articles %>);
+		viewModel.articles([<%= userLoginData.articles %>]);
 		viewModel.message("<%= message %>");
 		console.log(viewModel.message());
 		if (viewModel.message().length > 0) { // new message
