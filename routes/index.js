@@ -127,7 +127,6 @@ router.post('/uploadBlogFile', function (req, res, next) {
         if (type.length > 0 && type=="md") {
             var fileContent = fs.readFileSync(filename, 'utf8');
             var html = converter.makeHtml(fileContent).replace(/(\n)+|(\r\n)+/g, "");
-            fs.writeFileSync("test.html", html);
             fs.unlinkSync(filename);
             message = "Successfully add article.";
             addBlog(req, res, html, "blog");
