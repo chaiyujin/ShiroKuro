@@ -47,16 +47,19 @@
 			<div class="middle contentContainer" style="width: 1500px;">
 				<div class="middle clearfix">
 					<!-- left column for article -->
+					<!-- ko foreach: htmlContent -->
 					<div class="float span8">
-						<div class="articleBox miniBox" data-bind="html: htmlContent"></div>
-						<div class="tailBox"><a href="#">Read more-></a></div>
+						<div class="articleBox miniBox" data-bind="html: $data, attr: {id: $index}"></div>
+						<div class="tailBox clickable" onclick="expand(this)" data-bind="attr: {id: $index() + '+'}"><span>Read more</span><div class="glyphicon glyphicon-arrow-down colorful"></div></div>
+						<div class="tailBox clickable none" onclick="shrink(this)" data-bind="attr: {id: $index() + '-'}"><span>Retract</span><div class="glyphicon glyphicon-arrow-up colorful"></div></div>
 					</div>
+					<!-- /ko -->
 					<!-- right column for catalog -->
 					<div class="float catalog">
 						<!-- ko if: (!login()) -->
 						<form class="loginForm" action="/login" method="post">
 							<input class="textInput" type="text" name="_acc" id="inputAccount" placeholder="Account">
-							<input class="textInput" type="password" name="_key" id="inputPassword" placeholder="Password">
+							<input class="textInput" type="password" name="_pwd" id="inputPassword" placeholder="Password">
 							<input class="none" type="text" name="_from" id="formHTML" value="/blog_home">
 							<input class="buttonInput" type="submit" name="_loginBtn" value="Login">
 						</form>
@@ -66,12 +69,11 @@
 						<h1 data-bind="text: username"></h1>
 						<div class="subTitle"><h2>Introduce<h2></div>
 						<div class="content"><p data-bind="text: introduction"></p></div>
+						<div class="subTitle clickable" style="margin: 5px auto;" data-bind="click: function () {addArticle()}"><h2>Add article</h2></div>
 						<!-- /ko -->
 						<div class="subTitle"><h2>Catalog<h2></div>
 						<ul>
-							<li><a href="#">2015.09</a></li>
-							<li><a href="#">2015.09</a></li>
-							<li><a href="#">2015.09</a></li>
+							<li><span>All</span></li>
 						</ul>
 					</div>
 				</div>
@@ -81,9 +83,35 @@
 	<script src="/viewmodels/blog_home.js" type="text/javascript"></script>
 	<script>
 		$("#nav04").addClass("active");
-		AppViewModel.username("<%= userLoginData.username %>");
-		AppViewModel.introduction("<%= userLoginData.introduction %>");
-		AppViewModel.avatarURL("<%= userLoginData.avatarURL %>");
-		AppViewModel.login(<%= userLoginData.login %>);
+		viewModel.username("<%= userLoginData.username %>");
+		viewModel.introduction("<%= userLoginData.introduction %>");
+		viewModel.avatarURL("<%= userLoginData.avatarURL %>");
+		viewModel.login(<%= userLoginData.login %>);
+		viewModel.articles(<%= userLoginData.articles %>);
+		viewModel.message("<%= message %>");
+		console.log(viewModel.message());
+		if (viewModel.message().length > 0) { // new message
+			var template = "\
+			<div class='footBanner'>\
+				<div id='bk'></div>\
+				<div id='cxt'>" + viewModel.message() + "</div>\
+			</div>";
+			$('body').append(template);
+			setTimeout(function () {
+				$('body').children('.footBanner').remove();
+			}, 3000);
+		}
+
+		var expand = function (that) {
+			$("#" + that.id[0]).removeClass('miniBox');
+			$("#" + that.id[0] + "-").removeClass('none');
+			$(that).addClass('none');
+		}
+		var shrink = function (that) {
+			$("#" + that.id[0]).addClass('miniBox');
+			$("#" + that.id[0] + "+").removeClass('none');
+			$(that).addClass('none');
+			window.location.href="#" + that.id[0];
+		}
 	</script>
 </html>
