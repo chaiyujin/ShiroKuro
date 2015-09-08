@@ -60,6 +60,7 @@ router.get('/home', function (req, res, next) {
 
 router.get('/blog_home', function (req, res, next) {
     authentication(req, res);
+    console.log(req.session.user);
     res.render('blog_home', { userLoginData: userLoginData, message: message }, function (err, html) {
         message = "";
         res.send(html);

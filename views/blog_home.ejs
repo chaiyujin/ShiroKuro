@@ -83,6 +83,7 @@
 	<script src="/viewmodels/blog_home.js" type="text/javascript"></script>
 	<script>
 		$("#nav04").addClass("active");
+		console.log("<%= userLoginData.login %>");
 		viewModel.username("<%= userLoginData.username %>");
 		viewModel.introduction("<%= userLoginData.introduction %>");
 		viewModel.avatarURL("<%= userLoginData.avatarURL %>");
