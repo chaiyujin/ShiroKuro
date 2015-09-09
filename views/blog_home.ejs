@@ -90,6 +90,8 @@
 		viewModel.articles([<%= userLoginData.articles %>]);
 		viewModel.message("<%= message %>");
 		console.log(viewModel.message());
+		console.log(viewModel.login());
+		
 		if (viewModel.message().length > 0) { // new message
 			var template = "\
 			<div class='footBanner'>\

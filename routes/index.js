@@ -39,12 +39,17 @@ router.post('/login', function (req, res, next) {
                 userLoginData.introduction = docs.info;
                 userLoginData.articles = docs.articles;
                 userLoginData.login = true;
+                message = "Login successfully!";
                 req.session.user = userLoginData;
+            }
+            else {
+                message = "Fail to login!";
             }
             res.redirect(req.body._from);
         });
     }
     else {
+        message = "Fail to login!";
         res.redirect(req.body._from);
     }
 });
