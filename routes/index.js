@@ -10,6 +10,8 @@ var formidable = require('formidable'),
 var templateURL = "/content/pictures/avatar/";
 var userDB = require('../bin/database/user.js').user;
 var blogDB = require('../bin/database/user.js').blog;
+var cntDB = require('../bin/database/user.js').cnt;
+
 var userTuple = {
     acc: "",
     pwd: "",
@@ -31,7 +33,8 @@ router.get('/', function (req, res, next) {
 });
 
 router.post('/login', function (req, res, next) {
-    if (!req.session.user && req.body._acc != "" && req.body.pwd != "") {
+    if (!req.session.user && req.body._acc != "" && req.body._pwd != "") {
+        console.log(req.body);
         userDB.findOne({acc: req.body._acc, pwd: req.body._pwd}, function (err, docs) {
             if (docs) {
                 userLoginData.username = docs.acc;
@@ -51,6 +54,26 @@ router.post('/login', function (req, res, next) {
     else {
         message = "Fail to login!";
         res.redirect(req.body._from);
+    }
+});
+
+router.post('/changePassword', function (req, res, next) {
+    if (req.body._new != req.body._confirm) {
+        message = "New password not confirmed!";
+        res.redirect(req.body._from);
+    }
+    else {
+        userDB.update({ acc: userLoginData.username, pwd: req.body._old }, {
+            $set: { pwd: req.body._new }
+        }, function (err, docs) {
+            if (docs.n > 0) message = "Change successfully!";
+            else 
+                message = "Wrong old password!";
+            if (err) {
+                message = "Database error!";
+            }
+            res.redirect(req.body._from);
+        });
     }
 });
 
@@ -98,7 +121,7 @@ router.post('/blog_home/getBlog', function (req, res, next) {
         if (err) { return; }
         if (docs) {
             for (var i = docs.length - 1; i >= 0; i--) {
-                ret.push(docs[i].html);
+                ret.push({ html: docs[i].html, id: docs[i].blogID});
             }
             res.send(ret);
         }
@@ -116,14 +139,12 @@ function authentication (req, res) {
 }
 
 router.post('/uploadBlogFile', function (req, res, next) {
-    console.log("hehe");
     var form = new formidable.IncomingForm(); 
     var post = {}, file = {};
     var tmpPath = __dirname + '/../public/content/tmp';
     form.uploadDir = tmpPath;  //文件上传 临时文件存放路径 
 
     form.parse(req, function (error, fields, files) {
-        console.log(fields);
         var types = files.upload.name.split('.');
         var type = String(types[types.length-1]);
         var date = new Date();
@@ -134,43 +155,90 @@ router.post('/uploadBlogFile', function (req, res, next) {
             var fileContent = fs.readFileSync(filename, 'utf8');
             var html = converter.makeHtml(fileContent).replace(/(\n)+|(\r\n)+/g, "");
             fs.unlinkSync(filename);
-            message = "Successfully add article.";
-            addBlog(req, res, html, "blog");
+            message = "Successfully " + fields['param'] + " article.";
+            if (fields['_param'] == 'add') {
+                addBlog(req, res, html, "blog", fields['_from']);
+            }
+            else if (fields['_param'] == 'modify') {
+                modifyBlog(req, res, html, fields['_id'], fields['_from']);
+            }
         }
         else {
             fs.unlinkSync(filename);
-            message = "Fail to add article.";
-            res.redirect('/blog_home');
+            message = "Fail to " + fields['_param'] + " article.";
+            res.redirect(fields['_from']);
         }
     });
 });
 
-function addBlog(req, res, html, type) {
-    blogDB.count({}, function (err, count) {
-        var blogTuple = {
-            html: html,
-            type: type,
-            updatedAt: new Date(),
-            blogID: count
+router.post('/deleteBlogFile', function (req, res, next) {
+    for (var i = 0; i < userLoginData.articles.length; i++) {
+        if (userLoginData.articles[i] == req.body._id) {
+            userLoginData.articles.splice(i, 1); i--;
+            break;
         }
-        userLoginData.articles.push(count);
-        req.session.user = userLoginData;
-        userDB.update({ acc: userLoginData.username }, {
-            $push: { articles: count }
-        }, function (err, docs) {
-            if (err) {
-                console.log(err);
-                res.redirect('/blog_home');
+    }
+    req.session.user = userLoginData;
+    userDB.update({ acc: userLoginData.username }, {
+        $set: { articles: userLoginData.articles }
+    }, function (err, docs) {
+        if (docs.n > 0)
+            message = "Delete successfully!";
+        else 
+            message = "Fail to delete!";
+        if (err) {
+            message = "Database error!";
+        }
+        res.redirect(req.body._from);
+    });
+});
+
+function addBlog(req, res, html, type, from) {
+    cntDB.find({}, function (err, doc) {
+        console.log(doc);
+        var count = doc[0].nextBlogID;
+        cntDB.update({nextBlogID: count}, {$set: {nextBlogID: count + 1}}, function (err, docs) {
+            var blogTuple = {
+                html: html,
+                type: type,
+                updatedAt: new Date(),
+                blogID: count
             }
+            userLoginData.articles.push(count);
+            req.session.user = userLoginData;
+            userDB.update({ acc: userLoginData.username }, {
+                $push: { articles: count }
+            }, function (err, docs) {
+                if (err) {
+                    console.log(err);
+                    res.redirect(from);
+                }
+            });
+            var blogEntity = new blogDB(blogTuple);
+            blogEntity.save(function (err) {
+                if (err) {
+                    console.log(err);
+                    res.redirect(from);
+                }
+            });
+            res.redirect(from);
         });
-        var blogEntity = new blogDB(blogTuple);
-        blogEntity.save(function (err) {
-            if (err) {
-                console.log(err);
-                res.redirect('/blog_home');
-            }
-        });
-        res.redirect('/blog_home');
+    });
+}
+
+function modifyBlog(req, res, html, id, from) {
+    console.log(id);
+    blogDB.update({ blogID: id }, {
+        $set: { html: html }
+    }, function (err, docs) {
+        if (docs.n > 0)
+            message = "Modify successfully!";
+        else 
+            message = "Fail to modify!";
+        if (err) {
+            message = "Database error!";
+        }
+        res.redirect(from);
     });
 }
 

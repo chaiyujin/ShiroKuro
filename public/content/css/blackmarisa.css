@@ -21,7 +21,7 @@ span {
 .footBanner #cxt { position:fixed; bottom: 10px; left: 10px; right: 10px; height: 40px; text-align: center;  line-height: 40px; color: #FFF;}
 .centerContainer { position: absolute; top: 120px; bottom: 20px; left: 10px; right: 10px; background: red; }
 .middle { position: relative; margin-left: auto; margin-right: auto;}
-
+.textMiddle { text-align: center; }
 .float { position: relative; float: left; }
 .span1 { width: 10%; }
 .span2 { width: 20%; }
@@ -87,7 +87,8 @@ span {
 
 .catalog { position: absolute; top: 10px; bottom: 10px; right: 10px; left: 80%; background: #222; box-shadow: 0px 5px 10px #000; }
 .catalog img { margin: 20px auto 0px auto; display: block; height: 256px; width: 256px; box-shadow: 0px 0px 5px #000; }
-.catalog h1 { text-align: center; font-size: 18pt; line-height: 40px; }
+.catalog h1 { font-size: 18pt; line-height: 40px; }
+.catalog .title span { font-size: 18pt; line-height: 40px; }
 .catalog .subTitle { width: 100%; background-color: #009E49; }
 .catalog .subTitle h2 { margin-left: 5%; width: 95%; font-size: 16pt; line-height: 40px;  }
 .catalog ul { font-size: 12pt; }
@@ -131,6 +132,8 @@ span {
 .glyphicon-arrow-right:before{content:"\e092"}
 .glyphicon-arrow-up:before{content:"\e093"}
 .glyphicon-arrow-down:before{content:"\e094"}
+.glyphicon-pencil:before{content:"\270f"}
+.glyphicon-trash:before{content:"\e020"}
 
 .colorful { color: #009E49; }
 .heightAnime { transition-property: height; transition-duration: 0.5s; transition-timing-function: ease-out; }

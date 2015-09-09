@@ -13,6 +13,10 @@ var blogScheMa = new Schema({
     updatedAt: Date,
     blogID: Number
 }); //  定义了一个新的模型，但是此模式还未和blogs集合有关联
+var cntScheMa = new Schema({
+    nextBlogID: Number
+}); //  定义了一个新的模型，但是此模式还未和blogs集合有关联
 exports.user = mongoose.model('users', userScheMa); //  与users集合关联
 exports.blog = mongoose.model('blogs', blogScheMa); //  与blogs集合关联
-exports.db = mongoose.connect('mongodb://43.241.218.184:27017/shiro');
+exports.cnt = mongoose.model('cnts', cntScheMa); //  与blogs集合关联
+mongoose.connect('mongodb://43.241.218.184:27017/shiro');
