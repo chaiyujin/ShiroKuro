@@ -33,7 +33,9 @@ app.use(session({
     store: new MongoStore({
         url: settings.URL,
         db: db
-    })
+    }),
+    resave: false,
+    saveUninitialized: true
 }));
 
 app.use('/', routes);
