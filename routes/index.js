@@ -91,10 +91,10 @@ router.post('/blog_home/getBlog', function (req, res, next) {
     blogDB.find({ blogID: { $in: articles } }, function (err, docs) {
         if (err) { return; }
         if (docs) {
-            for (var idx in docs) {
-                ret.push(docs[idx].html);
-                res.send(ret);
+            for (var i = docs.length - 1; i >= 0; i--) {
+                ret.push(docs[i].html);
             }
+            res.send(ret);
         }
     });
 });
