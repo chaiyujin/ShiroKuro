@@ -4,6 +4,24 @@ var removeModal = function () {
 	$('body').children('.modal_dialog').remove();
 };
 
+var changeAvatarVM = function (user, from) {
+    console.log(user + " " + from);
+    var template = "\
+	<div class='modal' onclick='removeModal()'></div>\
+	<div class='modal_dialog articleBox'>\
+		<div class='span8 middle'>\
+		<h2>Select a picture.(256x256 best)</h2>\
+			<form action='/uploadAvatarFile' enctype='multipart/form-data' method='post'>\
+	            <input class='fileInput' type='file' name='upload' multiple='multiple'>\
+	            <input class='textInput none' type='text' name='_acc' value='" + user + "'/>\
+	            <input class='textInput none' type='text' name='_from' value='" + from + "'/>\
+	            <input class='buttonInput' type='submit' value='Upload'>\
+            </form>\
+		</div>\
+	</div>";
+    $('body').append(template);
+}
+
 var uploadBlog = function () {
 	var data = new FormData();
 	var file = $('#fileInput')[0].files[0];
@@ -84,6 +102,7 @@ var viewModel = {
     login: ko.observable(false),
     addArticle: addArticleVM,
     deleteArticle: deleteArticleVM,
+    changeAvatar: changeAvatarVM,
     message: ko.observable("")
 }
 
@@ -96,7 +115,15 @@ $.ajax({
 	success: function (data) {
 	    if (viewModel.login() == false || !viewModel.articles().length) {
 			var temp = (viewModel.login() == true)? data.newUser: data.guest;
-		    viewModel.htmlContent([{html: temp, id: -1}]);
+			viewModel.htmlContent([{
+			    html: temp,
+			    blogID: -1,
+			    owners: [''],
+			    groups: [],
+			    tags: [],
+                catalog: 'blog',
+			    updatedAt: new Date()
+			}]);
 	    }
 	    else {
 	        $.ajax({

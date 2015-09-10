@@ -5,11 +5,16 @@ var userScheMa = new Schema({
     pwd: String,
     info: String,
     avatar: String,
-    articles: [Number]
+    articles: [Number],
+    groups: [],
+    privilege: Number
 }); //  定义了一个新的模型，但是此模式还未和users集合有关联
 var blogScheMa = new Schema({
     html: String,
-    type: String,
+    owners: [String],
+    groups: [String],
+    tags: [String],
+    catalog: String,
     updatedAt: Date,
     blogID: Number
 }); //  定义了一个新的模型，但是此模式还未和blogs集合有关联

@@ -54,15 +54,19 @@
 							<div class="float span2 clickable" onclick="expand(this)" data-bind="attr: {id: $index() + '+c'}">
 								<span>Read more</span><div class="glyphicon glyphicon-arrow-down colorful"></div>
 							</div>
-							<div class="textMiddle clickable glyphicon glyphicon-trash" data-bind="click: function() {$root.deleteArticle($data.id, '/blog_home');}" style="float: right; line-height: 40px; width: 40px;"></div>
-							<div class="textMiddle clickable glyphicon glyphicon-pencil" data-bind="click: function() {$root.addArticle('modify', $data.id, '/blog_home');}" style="float: right; line-height: 40px; width: 40px;"></div>
+							<!-- ko if: ($root.username() == $data.owners[0]) -->
+							<div class="textMiddle clickable glyphicon glyphicon-trash" data-bind="click: function() {$root.deleteArticle($data.blogID, '/blog_home');}" style="float: right; line-height: 40px; width: 40px;"></div>
+							<div class="textMiddle clickable glyphicon glyphicon-pencil" data-bind="click: function() {$root.addArticle('modify', $data.blogID, '/blog_home');}" style="float: right; line-height: 40px; width: 40px;"></div>
+							<!-- /ko -->
 						</div>
 						<div class="tailBox none" data-bind="attr: {id: $index() + '-'}">
 							<div class="float span2 clickable" onclick="shrink(this)" data-bind="attr: {id: $index() + '-c'}" >
 								<span>Retract</span><div class="glyphicon glyphicon-arrow-up colorful"></div>
 							</div>
-							<div class="textMiddle clickable glyphicon glyphicon-trash" data-bind="click: function() {$root.deleteArticle($data.id, '/blog_home');}" style="float: right; line-height: 40px; width: 40px;"></div>
-							<div class="textMiddle clickable glyphicon glyphicon-pencil" data-bind="click: function() {$root.addArticle('modify', $data.id, '/blog_home');}" style="float: right; line-height: 40px; width: 40px;"></div>
+							<!-- ko if: ($root.username() == $data.owners[0]) -->
+							<div class="textMiddle clickable glyphicon glyphicon-trash" data-bind="click: function() {$root.deleteArticle($data.blogID, '/blog_home');}" style="float: right; line-height: 40px; width: 40px;"></div>
+							<div class="textMiddle clickable glyphicon glyphicon-pencil" data-bind="click: function() {$root.addArticle('modify', $data.blogID, '/blog_home');}" style="float: right; line-height: 40px; width: 40px;"></div>
+							<!-- /ko -->
 						</div>
 					</div>
 					<!-- /ko -->
@@ -77,16 +81,19 @@
 						</form>
 						<!-- /ko -->
 						<!-- ko if: (login()) -->
-						<img data-bind="attr: {src: avatarURL() }"/>
+						<div class="avatarContainer"><img data-bind="attr: {src: avatarURL() }"/></div>
+						<div class="avatarModify glyphicon glyphicon-edit clickable" data-bind="click: function() {changeAvatar(username(), '/blog_home')}"></div>
 						<div class="title textMiddle"><span data-bind="text: username()">Guest</span><div class="glyphicon glyphicon-pencil colorful clickable" style="margin-left: 5px; font-size: 14pt; line-height: 30px; width: 30px;" onclick="changePassword()"></div></div>
 						<div class="subTitle"><h2>Introduce</h2></div>
 						<div class="content"><p data-bind="text: introduction"></p></div>
 						<div class="subTitle clickable" style="margin: 5px auto;" data-bind="click: function () {addArticle('add', 0, '/blog_home')}"><h2>Add article</h2></div>
 						<!-- /ko -->
+						<!-- 
 						<div class="subTitle"><h2>Catalog</h2></div>
 						<ul>
 							<li><span>All</span></li>
 						</ul>
+						-->
 					</div>
 				</div>
 			</div>

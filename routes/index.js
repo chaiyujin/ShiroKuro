@@ -12,18 +12,13 @@ var userDB = require('../bin/database/user.js').user;
 var blogDB = require('../bin/database/user.js').blog;
 var cntDB = require('../bin/database/user.js').cnt;
 
-var userTuple = {
-    acc: "",
-    pwd: "",
-    info: "",
-    avatar: "",
-    articles: []
-};
 var userLoginData = {
     username: "Guest",
     avatarURL: templateURL + "default.jpg",
     introduction: "^_^ Shi-Ro",
     articles: [],
+    groups: [],
+    priviledge: 0,
     login: false
 };
 var message = "";
@@ -41,6 +36,8 @@ router.post('/login', function (req, res, next) {
                 userLoginData.avatarURL = templateURL + docs.avatar;
                 userLoginData.introduction = docs.info;
                 userLoginData.articles = docs.articles;
+                userLoginData.groups = docs.groups;
+                userLoginData.priviledge = docs.priviledge;
                 userLoginData.login = true;
                 message = "Login successfully!";
                 req.session.user = userLoginData;
@@ -121,7 +118,7 @@ router.post('/blog_home/getBlog', function (req, res, next) {
         if (err) { return; }
         if (docs) {
             for (var i = docs.length - 1; i >= 0; i--) {
-                ret.push({ html: docs[i].html, id: docs[i].blogID});
+                ret.push(docs[i]);
             }
             res.send(ret);
         }
@@ -139,19 +136,19 @@ function authentication (req, res) {
 }
 
 router.post('/uploadBlogFile', function (req, res, next) {
-    var form = new formidable.IncomingForm(); 
+    var form = new formidable.IncomingForm();
     var post = {}, file = {};
     var tmpPath = __dirname + '/../public/content/tmp';
     form.uploadDir = tmpPath;  //文件上传 临时文件存放路径 
 
     form.parse(req, function (error, fields, files) {
         var types = files.upload.name.split('.');
-        var type = String(types[types.length-1]);
+        var type = String(types[types.length - 1]);
         var date = new Date();
         var ms = Date.parse(date);
         var filename = tmpPath + "/files" + ms + "." + type;
         fs.renameSync(files.upload.path, filename);
-        if (type.length > 0 && type=="md") {
+        if (type.length > 0 && type == "md") {
             var fileContent = fs.readFileSync(filename, 'utf8');
             var html = converter.makeHtml(fileContent).replace(/(\n)+|(\r\n)+/g, "");
             fs.unlinkSync(filename);
@@ -166,6 +163,44 @@ router.post('/uploadBlogFile', function (req, res, next) {
         else {
             fs.unlinkSync(filename);
             message = "Fail to " + fields['_param'] + " article.";
+            res.redirect(fields['_from']);
+        }
+    });
+});
+
+router.post('/uploadAvatarFile', function (req, res, next) {
+    var form = new formidable.IncomingForm();
+    var post = {}, file = {};
+    var tmpPath = __dirname + '/../public/content/pictures/avatar';
+    form.uploadDir = tmpPath;  //文件上传 临时文件存放路径 
+
+    form.parse(req, function (error, fields, files) {
+        var types = files.upload.name.split('.');
+        var type = String(types[types.length - 1]);
+        var date = new Date();
+        var ms = Date.parse(date);
+        var filename = tmpPath + "/" + fields['_acc'] + "." + type;
+        fs.renameSync(files.upload.path, filename);
+        if (type.length > 0 && (type == "jpg" || type == "png" || type == "bmp")) {
+            userDB.update({ acc: fields['_acc'] }, {
+                $set: { avatar: fields['_acc'] + "." + type }
+            }, function (err, docs) {
+                if (docs.n > 0) {
+                    message = "Change successfully!";
+                    userLoginData.avatarURL = templateURL + fields['_acc'] + "." + type;
+                    req.session.user = userLoginData;
+                }
+                else
+                    message = "Fail to change!";
+                if (err) {
+                    message = "Database error!";
+                }
+                res.redirect(fields['_from']);
+            });
+        }
+        else {
+            fs.unlinkSync(filename);
+            message = "Not picture file.";
             res.redirect(fields['_from']);
         }
     });
@@ -200,7 +235,10 @@ function addBlog(req, res, html, type, from) {
         cntDB.update({nextBlogID: count}, {$set: {nextBlogID: count + 1}}, function (err, docs) {
             var blogTuple = {
                 html: html,
-                type: type,
+                owners: [userLoginData.username],
+                groups: [],
+                tags: [],
+                catalog: 'blog',
                 updatedAt: new Date(),
                 blogID: count
             }
