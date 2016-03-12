@@ -24,4 +24,4 @@ var cntScheMa = new Schema({
 exports.user = mongoose.model('users', userScheMa); //  与users集合关联
 exports.blog = mongoose.model('blogs', blogScheMa); //  与blogs集合关联
 exports.cnt = mongoose.model('cnts', cntScheMa); //  与blogs集合关联
-mongoose.connect('mongodb://43.241.218.184:27017/shiro');
+mongoose.connect('mongodb://127.0.0.1:27017/shiro');

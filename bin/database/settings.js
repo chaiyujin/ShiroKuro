@@ -1,7 +1,7 @@
 module.exports = {
     COOKIE_SECRET: "shiro-kuro.org",
-    URL: 'mongodb://43.241.218.184:27017/users',
+    URL: 'mongodb://127.0.0.1:27017/users',
     DB: 'users',
-    HOST: '43.241.218.184',
+    HOST: '127.0.0.1',
     PORT: 27017
 };
